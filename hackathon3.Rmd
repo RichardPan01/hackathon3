@@ -1,0 +1,47 @@
+---
+title: "Hackathon3"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(stringr)
+```
+
+
+
+```{r}
+C1 <- read.csv("engagement-data.csv")
+C2 <- C1 %>% group_by(id,modality) %>% summarise(avg = mean(measure))
+C3 <- spread(C2, modality, avg)
+rownames(C3) <- C3$id
+C3 <- C3[,-1]
+```
+
+```{r}
+fit <- kmeans(C3, 5)
+C4 <- data.frame(C3, fit$cluster)
+```
+
+
+```{r}
+library(factoextra)
+result <- dist(C3, method = "euclidean")
+
+result_hc <- hclust(d = result, method = "ward.D2")
+
+fviz_dend(result_hc, cex = 0.6)
+```
+
+```{r}
+D1 <- read.csv("student-level.csv")
+D2 <- gather(D1, assignment, assignment_score, assignment1, assignment2, assignment3, assignment4, assignment5)
+D2 <- gather(D2, quiz, quiz_score, quiz1, quiz2, quiz3, quiz4, quiz5)
+```
+
